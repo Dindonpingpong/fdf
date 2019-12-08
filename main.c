@@ -6,7 +6,7 @@
 /*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 15:52:44 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/06 23:19:32 by rkina            ###   ########.fr       */
+/*   Updated: 2019/12/08 18:32:08 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ int			main(int argc, char **argv)
 		mlx_loop(map_struct->mlx_ptr);
 		*/
 		int hex;
-		hex = atoi_hex("FF");
-		printf("%d",hex);
+		hex = atoi_hex("ff00ff");
+		printf("%x",hex);
 	}
 	else
 		ft_err();
