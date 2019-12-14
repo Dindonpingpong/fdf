@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   draw_map.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: npetrell <npetrell@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/12/02 17:30:52 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/02 19:15:57 by npetrell         ###   ########.fr       */
+/*   Created: 2019/12/10 18:13:18 by npetrell          #+#    #+#             */
+/*   Updated: 2019/12/14 18:28:12 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
+#include <stdio.h>
 
 static void		iso(int *x, int *y, int z)
 {
@@ -19,8 +20,30 @@ static void		iso(int *x, int *y, int z)
 
 	previous_x = *x;
 	previous_y = *y;
-	*x = (previous_x - previous_y) * cos(0.5);
-	*y = -z + (previous_x + previous_y) * sin(0.5);
+	*x = (previous_x - previous_y) * cos(0.523599);
+	*y = -z + (previous_x + previous_y) * sin(0.523599);
+}
+
+static void		rotate_x(int *y, int *z, int multi)
+{
+	int			previous_y;
+	int			previous_z;
+
+	previous_y = *y;
+	previous_z = *z;
+	*y = previous_y * cos(multi * 0.523599) + previous_z * sin(multi * 0.523599);
+	*z = -previous_y * sin(multi * 0.523599) + previous_z * cos(multi * 0.523599);
+}
+
+static void		rotate_y(int *x, int *z, int multi)
+{
+	int			previous_x;
+	int			previous_z;
+
+	previous_x = *x;
+	previous_z = *z;
+	*x = previous_x * cos(multi * 0.523599) + previous_z * sin(multi * 0.523599);
+	*z = -previous_x * sin(multi * 0.523599) + previous_z * cos(multi * 0.523599);
 }
 
 static void		draw_pix(int x1, int y1, int x2, int y2, fdf_t *map)
@@ -57,12 +80,22 @@ void			draw_line(int x1, int y1, int x2, int y2, fdf_t *map_struct)
 	int			z1;
 	int			z2;
 	int			max;
+	int			color1;
+	int			color2;
 
-	z1 = (map_struct->map[y1 / map_struct->zoom]
-	[x1 / map_struct->zoom]) * map_struct->zoom;
-	z2 = map_struct->map[y2 / map_struct->zoom]
-	[x2 / map_struct->zoom] * map_struct->zoom;
+	z1 = map_struct->map[y1][x1].list.z * map_struct->zoom;
+	z2 = map_struct->map[y2][x2].list.z * map_struct->zoom;
 	map_struct->color = (z1 || z2) ? 0x800080 : 0xffffff;
+	if (map_struct->map[y1][x1].list.color > 0 || map_struct->map[y2][x2].list.color > 0)
+		map_struct->color = map_struct->map[y1][x1].list.color;
+	x1 *= map_struct->zoom;
+	y1 *= map_struct->zoom;
+	x2 *= map_struct->zoom;
+	y2 *= map_struct->zoom;
+	rotate_x(&y1, &z1, map_struct->rotate_x);
+	rotate_x(&y2, &z2, map_struct->rotate_x);
+	rotate_y(&x1, &z1, map_struct->rotate_y);
+	rotate_y(&x2, &z2, map_struct->rotate_y);
 	iso(&x1, &y1, z1);
 	iso(&x2, &y2, z2);
 	x1 += map_struct->move_x;
@@ -86,11 +119,9 @@ void			draw_map(fdf_t *map_struct)
 		while (i < map_struct->width)
 		{
 			if (i < map_struct->width - 1)
-				draw_line(i * map_struct->zoom, j * map_struct->zoom,
-				(i + 1) * map_struct->zoom, j * map_struct->zoom, map_struct);
+				draw_line(i, j, i + 1, j, map_struct);
 			if (j < map_struct->height - 1)
-				draw_line(i * map_struct->zoom, j * map_struct->zoom,
-				i * map_struct->zoom, (j + 1) * map_struct->zoom, map_struct);
+				draw_line(i, j,	i, j + 1, map_struct);
 			i++;
 		}
 		j++;

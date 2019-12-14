@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_valid.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
+/*   By: npetrell <npetrell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/12/01 17:29:25 by rkina             #+#    #+#             */
-/*   Updated: 2019/12/08 17:52:28 by rkina            ###   ########.fr       */
+/*   Created: 2019/12/10 18:13:43 by npetrell          #+#    #+#             */
+/*   Updated: 2019/12/13 15:44:55 by npetrell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void		check_el(char *el)
 		ft_err();
 }
 
-static int		count_size(char *line)
+int				count_size(char *line)
 {
 	int			size;
 	char		**tmp;
@@ -45,10 +45,10 @@ static int		count_size(char *line)
 	while (tmp[size])
 	{
 		check_el(tmp[size]);
-		free(tmp[size]);
+	//	free(tmp[size]);
 		size++;
 	}
-	free(tmp);
+//	free(tmp);
 	return (size);
 }
 

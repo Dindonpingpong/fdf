@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_and_mouse_press.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: npetrell <npetrell@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/12/02 17:33:42 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/06 13:41:37 by npetrell         ###   ########.fr       */
+/*   Created: 2019/12/10 18:13:28 by npetrell          #+#    #+#             */
+/*   Updated: 2019/12/14 18:25:39 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,10 @@ void	second_win(fdf_t *map)
 
 int		key_press(int key_code, fdf_t *map)
 {
+	if (key_code == 16)
+		map->rotate_y += 1;
+	if (key_code == 7)
+		map->rotate_x += 1;
 	if (key_code == 125 || key_code == 1)
 		map->move_y += 20;
 	if (key_code == 126 || key_code == 13)
@@ -59,6 +63,10 @@ int		key_press(int key_code, fdf_t *map)
 int		mouse_press(int button, int x, int y, fdf_t *map)
 {
 	if (button == 1 && x > 10 && x < 30 && y > 10 && y < 30)
-		map->window1 = mlx_new_window(map->mlx_ptr, 500, 500, "FDF");
+		second_win(map);
+	if (button == 4 && x > 0 && x < 1000 && y > 0 && y < 1000)
+		map->zoom += 10;
+	if (button == 5)
+		map->zoom -= 10;
 	return (0);
 }
