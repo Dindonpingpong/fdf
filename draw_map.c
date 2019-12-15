@@ -6,44 +6,80 @@
 /*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/10 18:13:18 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/14 18:28:12 by rkina            ###   ########.fr       */
+/*   Updated: 2019/12/15 21:21:12 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include <stdio.h>
 
-static void		iso(int *x, int *y, int z)
+/*
+double percent(int start, int end, int current)
+{
+    double placement;
+    double distance;
+
+    placement = current - start;
+    distance = end - start;
+    return ((distance == 0) ? 1.0 : (placement / distance));
+}
+
+int get_light(int start, int end, double percentage)
+{
+    return ((int)((1 - percentage) * start + percentage * end));
+}
+
+int get_color(int current, int start, t_point end, t_point delta)
+{
+    int     red;
+    int     green;
+    int     blue;
+    double  percentage;
+
+    if (current.color == end.color)
+        return (current.color);
+    if (delta.x > delta.y)
+        percentage = percent(start.x, end.x, current.x);
+    else
+        percentage = percent(start.y, end.y, current.y);
+    red = get_light((start.color >> 16) & 0xFF, (end.color >> 16) & 0xFF, percentage);
+    green = get_light((start.color >> 8) & 0xFF, (end.color >> 8) & 0xFF, percentage);
+    blue = get_light(start.color & 0xFF, end.color & 0xFF, percentage);
+    return ((red << 16) | (green << 8) | blue);
+}
+*/
+
+static void		iso(int *x, int *y, int z, double alpha)
 {
 	int			previous_x;
 	int			previous_y;
 
 	previous_x = *x;
 	previous_y = *y;
-	*x = (previous_x - previous_y) * cos(0.523599);
-	*y = -z + (previous_x + previous_y) * sin(0.523599);
+	*x = (previous_x - previous_y) * cos(alpha);
+	*y = -z + (previous_x + previous_y) * sin(alpha);
 }
 
-static void		rotate_x(int *y, int *z, int multi)
+static void		rotate_x(int *y, int *z, int multi, double alpha)
 {
 	int			previous_y;
 	int			previous_z;
 
 	previous_y = *y;
 	previous_z = *z;
-	*y = previous_y * cos(multi * 0.523599) + previous_z * sin(multi * 0.523599);
-	*z = -previous_y * sin(multi * 0.523599) + previous_z * cos(multi * 0.523599);
+	*y = previous_y * cos(multi * alpha) + previous_z * sin(multi * alpha);
+	*z = -previous_y * sin(multi * alpha) + previous_z * cos(multi * alpha);
 }
 
-static void		rotate_y(int *x, int *z, int multi)
+static void		rotate_y(int *x, int *z, int multi, double alpha)
 {
 	int			previous_x;
 	int			previous_z;
 
 	previous_x = *x;
 	previous_z = *z;
-	*x = previous_x * cos(multi * 0.523599) + previous_z * sin(multi * 0.523599);
-	*z = -previous_x * sin(multi * 0.523599) + previous_z * cos(multi * 0.523599);
+	*x = previous_x * cos(multi * alpha) + previous_z * sin(multi * alpha);
+	*z = -previous_x * sin(multi * alpha) + previous_z * cos(multi * alpha);
 }
 
 static void		draw_pix(int x1, int y1, int x2, int y2, fdf_t *map)
@@ -51,21 +87,37 @@ static void		draw_pix(int x1, int y1, int x2, int y2, fdf_t *map)
 	int			delta_x_y[2];
 	int			sign_x_y[2];
 	int			error1_2[2];
+	int			height;
+	int			palette[4] = {0x7c8bcc, 0x6074cc, 0x405ac9, 0x2746cf};
+	int			i;
 
 	delta_x_y[0] = abs(x2 - x1);
 	delta_x_y[1] = abs(y2 - y1);
 	sign_x_y[0] = x1 < x2 ? 1 : -1;
 	sign_x_y[1] = y1 < y2 ? 1 : -1;
 	error1_2[0] = delta_x_y[0] - delta_x_y[1];
+	height = map->height / 4;
 	mlx_pixel_put(map->mlx_ptr, map->window, x2, y2, map->color);
+	i = 0;
 	while ((x1 - x2) || (y1 - y2))
 	{
-		mlx_pixel_put(map->mlx_ptr, map->window, x1, y1, map->color);
+		if (map->color == 0xfc9403)
+		{
+			if (i == 4)
+				i = 0;
+			i++;
+			mlx_pixel_put(map->mlx_ptr, map->window, x1, y1, palette[i]);
+			
+		}
+		else
+		{
+			mlx_pixel_put(map->mlx_ptr, map->window, x1, y1, map->color);
+		}	
 		error1_2[1] = error1_2[0] * 2;
 		if (error1_2[1] > -delta_x_y[1])
 		{
 			error1_2[0] -= delta_x_y[1];
-			x1 += sign_x_y[0];
+			x1 += sign_x_y[0];		
 		}
 		if (error1_2[1] < delta_x_y[0])
 		{
@@ -82,22 +134,27 @@ void			draw_line(int x1, int y1, int x2, int y2, fdf_t *map_struct)
 	int			max;
 	int			color1;
 	int			color2;
+	int			palette[4] = {0xfcba03, 0x2dfc03, 0x03fce7, 0x9403fc};
 
 	z1 = map_struct->map[y1][x1].list.z * map_struct->zoom;
 	z2 = map_struct->map[y2][x2].list.z * map_struct->zoom;
-	map_struct->color = (z1 || z2) ? 0x800080 : 0xffffff;
+	map_struct->color = (z1 || z2) ? 0xfc9403 : 0x0e37eb;
+	map_struct->color = palette[map_struct->change_color];
 	if (map_struct->map[y1][x1].list.color > 0 || map_struct->map[y2][x2].list.color > 0)
 		map_struct->color = map_struct->map[y1][x1].list.color;
 	x1 *= map_struct->zoom;
 	y1 *= map_struct->zoom;
 	x2 *= map_struct->zoom;
 	y2 *= map_struct->zoom;
-	rotate_x(&y1, &z1, map_struct->rotate_x);
-	rotate_x(&y2, &z2, map_struct->rotate_x);
-	rotate_y(&x1, &z1, map_struct->rotate_y);
-	rotate_y(&x2, &z2, map_struct->rotate_y);
-	iso(&x1, &y1, z1);
-	iso(&x2, &y2, z2);
+	rotate_x(&y1, &z1, map_struct->rotate_x, map_struct->alpha);
+	rotate_x(&y2, &z2, map_struct->rotate_x, map_struct->alpha);
+	rotate_y(&x1, &z1, map_struct->rotate_y, map_struct->alpha);
+	rotate_y(&x2, &z2, map_struct->rotate_y, map_struct->alpha);
+	if (map_struct->alpha == 0.523599 || map_struct->alpha == 0)
+	{
+		iso(&x1, &y1, z1, map_struct->alpha);
+		iso(&x2, &y2, z2, map_struct->alpha);
+	}
 	x1 += map_struct->move_x;
 	y1 += map_struct->move_y;
 	x2 += map_struct->move_x;

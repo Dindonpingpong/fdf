@@ -6,7 +6,7 @@
 /*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/10 18:13:59 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/14 18:24:56 by rkina            ###   ########.fr       */
+/*   Updated: 2019/12/15 21:15:14 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@ typedef struct	map
 typedef struct	fdf_l
 {
 	tmap		**map;
+	double		alpha;
+	int			rotate_x;
+	int 		rotate_y;
 	int			width;
 	int			height;
 	void		*mlx_ptr;
@@ -42,8 +45,7 @@ typedef struct	fdf_l
 	int			move_x;
 	int			move_y;
 	int			zoom;
-	int			rotate_x;
-	int 		rotate_y;
+	int			change_color;
 }				fdf_t;
 
 void			check_valid(char *file_name);
