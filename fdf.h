@@ -6,7 +6,7 @@
 /*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/10 18:13:59 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/15 21:15:14 by rkina            ###   ########.fr       */
+/*   Updated: 2019/12/17 15:44:44 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ typedef struct	fdf_l
 	double		alpha;
 	int			rotate_x;
 	int 		rotate_y;
+	int			rotate_z;
 	int			width;
 	int			height;
 	void		*mlx_ptr;

@@ -6,7 +6,7 @@
 /*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/10 18:13:28 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/15 21:20:54 by rkina            ###   ########.fr       */
+/*   Updated: 2019/12/17 15:56:34 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ int		key_press(int key_code, fdf_t *map)
 			map->change_color = 0;
 		map->change_color += 1;
 	}
+	if (key_code == 6)
+		map->rotate_z += 1;
 	if (key_code == 16)
 		map->rotate_y += 1;
 	if (key_code == 7)
@@ -64,6 +66,7 @@ int		key_press(int key_code, fdf_t *map)
 		map->alpha = 0;
 		map->rotate_x = 0;
 		map->rotate_y = 0;
+		map->rotate_z = 0;
 	}
 	if (key_code == 84)
 	{

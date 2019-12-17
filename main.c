@@ -6,14 +6,14 @@
 /*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 15:52:44 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/15 21:15:35 by rkina            ###   ########.fr       */
+/*   Updated: 2019/12/17 16:21:30 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include <stdio.h>
 
-// gcc -I minilibx -L minilibx -lmlx -framework OpenGL -framework Appkit main.c libft/libft.a
+// gcc -I minilibx -L minilibx -lmlx -framework OpenGL -framework Appkit main.c libft/libft.a atoi_hex.c check_valid.c create_map.c draw_map.c key_and_mouse_press.c 
 // gcc -I minilibx_macos minilibx_macos/libmlx.a -framework OpenGL -framework Appkit main.c libft/libft.a
 
 int			main(int argc, char **argv)
@@ -34,6 +34,9 @@ int			main(int argc, char **argv)
 		map_struct->alpha = 0.523599;
 		map_struct->move_y = 100;
 		map_struct->move_x = 100;
+		map_struct->rotate_x = 0;
+		map_struct->rotate_y = 0;
+		map_struct->rotate_z = 0;
 		map_struct->change_color = 0;
 		map_struct->zoom = 1;
 		draw_map(map_struct);
@@ -47,4 +50,3 @@ int			main(int argc, char **argv)
 		ft_err();
 	return (0);
 }
-
