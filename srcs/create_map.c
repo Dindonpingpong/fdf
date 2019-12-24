@@ -6,7 +6,7 @@
 /*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 22:03:04 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/23 23:33:17 by rkina            ###   ########.fr       */
+/*   Updated: 2019/12/24 15:18:59 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,36 +19,45 @@ static void		ft_makestruct(fdf_t **map_struct, int width, int height)
 	(*map_struct)->width = width;
 }
 
-static void		ft_copy(fdf_t **map_struct, char *file)
+static void		ft_copy(fdf_t **map_struct, char *file, int fd)
 {
 	char		*line;
-	int			i;
-	int			j;
-	int			n;
-	int			fd;
 	char		**tmp;
+	int			i[3];
 
 	fd = open(file, O_RDONLY);
-	i = 0;
+	i[0] = 0;
 	while (get_next_line(fd, &line) > 0)
 	{
 		tmp = ft_strsplit(line, ' ');
-		j = -1;
-		while (tmp[++j])
+		i[1] = -1;
+		while (tmp[++i[1]])
 		{
-			n = -1;
-			(*map_struct)->map[i][j].list.z = ft_atoi(tmp[j]);
-			while (tmp[j][++n])
+			i[2] = -1;
+			(*map_struct)->map[i[0]][i[1]].list.z = ft_atoi(tmp[i[1]]);
+			while (tmp[i[1]][++i[2]])
 			{
-				if (tmp[j][n] == ',')
-					(*map_struct)->map[i][j].list.color = atoi_hex(&tmp[j][n++]);
+				if (tmp[i[1]][i[2]] == ',')
+					(*map_struct)->map[i[0]][i[1]].list.color =
+					atoi_hex(&tmp[i[1]][i[2]++]);
 			}
 		}
-		i++;
+		i[0]++;
 		free(tmp);
 		free(line);
 	}
-	close(fd);
+}
+
+void			init_map(fdf_t **map_struct)
+{
+	(*map_struct)->alpha = 0.523599;
+	(*map_struct)->move_y = 100;
+	(*map_struct)->move_x = 100;
+	(*map_struct)->rotate_x = 0;
+	(*map_struct)->rotate_y = 0;
+	(*map_struct)->rotate_z = 0;
+	(*map_struct)->change_color = 0;
+	(*map_struct)->zoom = 1;
 }
 
 void			ft_createmap(fdf_t **map_struct, char *file)
