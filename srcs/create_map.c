@@ -6,7 +6,7 @@
 /*   By: rkina <rkina@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/23 22:03:04 by npetrell          #+#    #+#             */
-/*   Updated: 2019/12/24 15:18:59 by rkina            ###   ########.fr       */
+/*   Updated: 2019/12/24 15:23:16 by rkina            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,12 @@ static void		ft_makestruct(fdf_t **map_struct, int width, int height)
 	(*map_struct)->width = width;
 }
 
-static void		ft_copy(fdf_t **map_struct, char *file, int fd)
+static void		ft_copy(fdf_t **map_struct, int fd)
 {
 	char		*line;
 	char		**tmp;
 	int			i[3];
 
-	fd = open(file, O_RDONLY);
 	i[0] = 0;
 	while (get_next_line(fd, &line) > 0)
 	{
@@ -79,5 +78,7 @@ void			ft_createmap(fdf_t **map_struct, char *file)
 	j = 0;
 	while (j < (*map_struct)->height)
 		(*map_struct)->map[j++] = (tmap*)malloc(sizeof(tmap) * width);
+	fd = open(file, O_RDONLY);
 	ft_copy(map_struct, file);
+	close(fd);
 }
